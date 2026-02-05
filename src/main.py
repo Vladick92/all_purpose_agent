@@ -17,7 +17,7 @@ def main():
 
     if st.session_state.generation:
         last_prompt=st.session_state.messages[-1]['text']
-        assistant_responce(last_prompt,st.session_state.text_model)
+        assistant_responce(last_prompt,st.session_state.text_model,st.session_state.optional_file)
         st.rerun()
 
 if __name__=="__main__":

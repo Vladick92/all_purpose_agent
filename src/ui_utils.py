@@ -10,6 +10,8 @@ def session_state_init():
         st.session_state.text_model='gemini-2.5-flash-lite'
     if 'image_model' not in st.session_state:
         st.session_state.image_model='imagen-4.0-fast-generate-001'
+    if 'optional_file' not in st.session_state:
+        st.session_state.optional_file=None
 
 def sidebar_render():
     with st.sidebar:
@@ -31,6 +33,15 @@ def sidebar_render():
             )
             st.session_state.image_model=AVAILABLE_IMAGE_MODELS[image_model]
 
+        selected_file=st.file_uploader(
+            "Choose files",
+            type=['txt','pdf'],
+            max_upload_size=20,
+            disabled=st.session_state.generation
+        )
+
+        if selected_file: st.session_state.optional_file=selected_file
+
         if st.button("clear",disabled=st.session_state.generation):
             st.session_state.messages=[]
             st.rerun()
@@ -44,13 +55,13 @@ def chat_render():
                 st.image(msg['photo_path'],
                         caption=f'Image name: {msg['photo_path'].split('/')[1]}')
 
-def assistant_responce(user_input,text_model):
+def assistant_responce(user_input,text_model,file):
     with st.chat_message('assistant'):
         placeholder=st.empty()
         full_resp=''
         current_text=''
         with st.spinner('Thinking',show_time=True):
-            responce=get_response(user_input,text_model)
+            responce=get_response(user_input,text_model,file)
             for part in responce.parts:
                 if part.text:
                     full_resp+=part.text

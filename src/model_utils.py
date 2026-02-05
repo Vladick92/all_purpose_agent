@@ -41,10 +41,18 @@ main_confing=types.GenerateContentConfig(
     tools=[generate_image_tool]
     )
 
-def get_response(user_input,text_model):
+def get_response(user_input,text_model,document=None):
+    content_list=[user_input]
+    if document:
+        mime_type= "application/pdf" if document.name.endswith(".pdf") else 'text/plain'
+        doc_data=types.Part.from_bytes(
+            data=document.getvalue(),
+            mime_type=mime_type
+        )
+        content_list.insert(0,doc_data)
     return client.models.generate_content(
         model=text_model,
-        contents=[user_input],
+        contents=content_list,
         config=main_confing
     )
 
