@@ -1,0 +1,1 @@
+in git ignore folder with images
