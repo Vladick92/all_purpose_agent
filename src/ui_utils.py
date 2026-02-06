@@ -23,6 +23,13 @@ def session_state_init():
             'max_output_tokens': 1024
         }
 
+    if 'image_model_params' not in st.session_state:
+        st.session_state.image_model_params={
+            'aspect_ratio': '1:1',
+            'image_size': '1K',
+            'guidance_scale': 0.7
+        }
+
 def sidebar_render():
     with st.sidebar:
         with st.expander('Choose model'):
@@ -71,7 +78,29 @@ def sidebar_render():
                     'Max tokens for output',128,8196,
                     value=st.session_state.text_model_params['max_output_tokens'],
                     disabled=st.session_state.generation)
-                    
+                
+            with st.expander('Image generation'):
+                st.session_state.image_model_params['aspect_ratio']=st.selectbox(
+                    'Aspect ratio',
+                    ['1:1','3:4','4:3','16:9'],
+                    index=0,
+                    disabled=st.session_state.generation
+                )
+
+                st.session_state.image_model_params['image_size']=st.selectbox(
+                    'Size of image',
+                    ['1K','2K'],
+                    index=0,
+                    disabled=st.session_state.generation
+                )
+
+                st.session_state.image_model_params['guidance_scale']=st.slider(
+                    "Guidance scale",
+                    0.0,10.0,step=0.5,
+                    value=st.session_state.image_model_params['guidance_scale'],
+                    disabled=st.session_state.generation
+                )
+                
 
         if selected_file: st.session_state.optional_file=selected_file
 
