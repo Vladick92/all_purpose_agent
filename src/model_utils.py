@@ -36,12 +36,22 @@ def generate_image_tool(prompt:str):
     photo_path.write_bytes(image_bytes)
     return {'photo_path':str(photo_path)}
 
-main_confing=types.GenerateContentConfig(
-    system_instruction="you are helpful AI assistant. Use tool for generating images",
-    tools=[generate_image_tool]
-    )
+# main_confing=types.GenerateContentConfig(
+#     system_instruction="you are helpful AI assistant. Use tool for generating images",
+#     tools=[generate_image_tool],
+#     temperature=0.7,
+#     top_p=0.85,
+#     top_k=50,
+#     max_output_tokens=1024
+#     )
 
 def get_response(user_input,text_model,document=None):
+    params=st.session_state.text_model_params
+    main_confing=types.GenerateContentConfig(
+        system_instruction="you are helpful AI assistant. Use tool for generating images",
+        tools=[generate_image_tool],
+        **params
+    )
     content_list=[user_input]
     if document:
         mime_type= "application/pdf" if document.name.endswith(".pdf") else 'text/plain'

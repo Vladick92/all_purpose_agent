@@ -6,12 +6,22 @@ def session_state_init():
         st.session_state.messages=[]
     if 'generation' not in st.session_state:
         st.session_state.generation=False
+
     if 'text_model' not in st.session_state:
         st.session_state.text_model='gemini-2.5-flash-lite'
     if 'image_model' not in st.session_state:
         st.session_state.image_model='imagen-4.0-fast-generate-001'
+
     if 'optional_file' not in st.session_state:
         st.session_state.optional_file=None
+
+    if 'text_model_params' not in st.session_state:
+        st.session_state.text_model_params={
+            'temperature': 0.7,
+            'top_p': 0.85,
+            'top_k': 50,
+            'max_output_tokens': 1024
+        }
 
 def sidebar_render():
     with st.sidebar:
@@ -39,6 +49,29 @@ def sidebar_render():
             max_upload_size=20,
             disabled=st.session_state.generation
         )
+
+        with st.expander('Generation parameters'):
+            with st.expander('Text generation'):
+                st.session_state.text_model_params['temperature']=st.slider(
+                    'Temperature',0.0,2.0,
+                    value=st.session_state.text_model_params['temperature'],
+                    disabled=st.session_state.generation)
+                
+                st.session_state.text_model_params['top_p']=st.slider(
+                    'Top P',0.0,1.0,
+                    value=st.session_state.text_model_params['top_p'],
+                    disabled=st.session_state.generation)
+                
+                st.session_state.text_model_params['top_k']=st.slider(
+                    'Top K',1,100,
+                    value=st.session_state.text_model_params['top_k'],
+                    disabled=st.session_state.generation)
+                
+                st.session_state.text_model_params['max_output_tokens']=st.slider(
+                    'Max tokens for output',128,8196,
+                    value=st.session_state.text_model_params['max_output_tokens'],
+                    disabled=st.session_state.generation)
+                    
 
         if selected_file: st.session_state.optional_file=selected_file
 
