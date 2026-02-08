@@ -30,6 +30,9 @@ def session_state_init():
             'guidance_scale': 0.7
         }
 
+    if 'thinking_level' not in st.session_state:
+        st.session_state.thinking_level=None
+
 def sidebar_render():
     with st.sidebar:
         with st.expander('Choose model'):
@@ -62,22 +65,33 @@ def sidebar_render():
                 st.session_state.text_model_params['temperature']=st.slider(
                     'Temperature',0.0,2.0,
                     value=st.session_state.text_model_params['temperature'],
-                    disabled=st.session_state.generation)
+                    disabled=st.session_state.generation
+                    )
                 
                 st.session_state.text_model_params['top_p']=st.slider(
                     'Top P',0.0,1.0,
                     value=st.session_state.text_model_params['top_p'],
-                    disabled=st.session_state.generation)
+                    disabled=st.session_state.generation
+                    )
                 
                 st.session_state.text_model_params['top_k']=st.slider(
                     'Top K',1,100,
                     value=st.session_state.text_model_params['top_k'],
-                    disabled=st.session_state.generation)
+                    disabled=st.session_state.generation
+                    )
                 
                 st.session_state.text_model_params['max_output_tokens']=st.slider(
                     'Max tokens for output',128,8196,
                     value=st.session_state.text_model_params['max_output_tokens'],
-                    disabled=st.session_state.generation)
+                    disabled=st.session_state.generation
+                    )
+                
+                st.session_state.thinking_level=st.select_slider(
+                    "Thinking level",
+                    options=['minimal','low','medium','high'],
+                    value=st.session_state.thinking_level,
+                    disabled=st.session_state.generation
+                )
                 
             with st.expander('Image generation'):
                 st.session_state.image_model_params['aspect_ratio']=st.selectbox(

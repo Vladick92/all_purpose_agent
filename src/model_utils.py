@@ -42,6 +42,7 @@ def get_response(user_input,text_model,document=None):
     main_confing=types.GenerateContentConfig(
         system_instruction="you are helpful AI assistant. Use tool for generating images",
         tools=[generate_image_tool],
+        thinking_config=types.ThinkingConfig(thinking_level='low'),
         **params
     )
 
