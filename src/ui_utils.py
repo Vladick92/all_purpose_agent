@@ -20,7 +20,8 @@ def session_state_init():
             'temperature': 0.7,
             'top_p': 0.85,
             'top_k': 50,
-            'max_output_tokens': 1024
+            'max_output_tokens': 1024,
+            'thinking_level': 'minimal'
         }
 
     if 'image_model_params' not in st.session_state:
@@ -29,9 +30,6 @@ def session_state_init():
             'image_size': '1K',
             'guidance_scale': 0.7
         }
-
-    if 'thinking_level' not in st.session_state:
-        st.session_state.thinking_level=None
 
 def sidebar_render():
     with st.sidebar:
@@ -86,10 +84,10 @@ def sidebar_render():
                     disabled=st.session_state.generation
                     )
                 
-                st.session_state.thinking_level=st.select_slider(
+                st.session_state.text_model_params['thinking_level']=st.select_slider(
                     "Thinking level",
                     options=['minimal','low','medium','high'],
-                    value=st.session_state.thinking_level,
+                    value=st.session_state.text_model_params['thinking_level'],
                     disabled=st.session_state.generation
                 )
                 
@@ -154,3 +152,12 @@ def assistant_responce(user_input,text_model,file):
         'photo_path': photo_path if photo_path else None
     })
     st.session_state.generation=False
+
+# test={
+#             'temperature': 0.7,
+#             'top_p': 0.85,
+#             'top_k': 50,
+#             'max_output_tokens': 1024,
+#             'thinking_level': 'minimal'
+#         }
+# test.pop

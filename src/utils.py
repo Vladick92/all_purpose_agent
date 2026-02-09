@@ -16,10 +16,11 @@ def get_image_path(history):
                     photo_path=tool_data.get('result',{}).get('photo_path')
     return photo_path
 
+
 AVAILABLE_TEXT_MODELS={
     'gemini 2.5 flash lite': 'gemini-2.5-flash-lite',
     'gemini 2.5 flash': 'gemini-2.5-flash',
-    'gemini 2.5 flash pro': 'gemini-2.5-flash-pro',
+    'gemini 2.5 pro': 'gemini-2.5-pro',
     'gemini 3 flash': 'gemini-3-flash-preview',
     'gemini 3 pro': 'gemini-3-pro-preview',
 }
@@ -30,3 +31,8 @@ AVAILABLE_IMAGE_MODELS={
     'imagen 4 ultra generate': 'imagen-4.0-ultra-generate-001',
 }
 
+TEXT_MODEL_WITHOUT_TOOLS={'gemini-2.5-flash-lite'}
+
+THINKING_MODELS={'gemini-3-flash-preview','gemini-3-pro-preview'}
+
+IMAGE_MODEL_WITH_PARAMS={'imagen-4.0-generate-001','imagen-4.0-ultra-generate-001'}
