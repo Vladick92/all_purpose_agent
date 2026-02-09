@@ -133,31 +133,30 @@ def assistant_responce(user_input,text_model,file):
     with st.chat_message('assistant'):
         placeholder=st.empty()
         full_resp=''
-        current_text=''
-        with st.spinner('Thinking',show_time=True):
-            responce=get_response(user_input,text_model,file)
-            for part in responce.parts:
-                if part.text:
-                    full_resp+=part.text
+        try: 
+            with st.spinner('Thinking',show_time=True):
+                responce=get_response(user_input,text_model,file)
+                if not responce.parts:
+                    full_resp="Im sorry, but i cant answer prompt."
+                else:
+                    for part in responce.parts:
+                        if part.text:
+                            full_resp+=part.text
 
-            photo_path=get_image_path(responce.automatic_function_calling_history)
+                    photo_path=get_image_path(responce.automatic_function_calling_history)
 
-        for word in stream_text(full_resp):
-            current_text+=word
-            placeholder.write(current_text+ "~>")
+            current_text=''
+            for word in stream_text(full_resp):
+                current_text+=word
+                placeholder.write(current_text+ "~>")
+            placeholder.write(current_text)
 
-    st.session_state.messages.append({
-        'role': 'assistant',
-        'text': full_resp,
-        'photo_path': photo_path if photo_path else None
-    })
-    st.session_state.generation=False
-
-# test={
-#             'temperature': 0.7,
-#             'top_p': 0.85,
-#             'top_k': 50,
-#             'max_output_tokens': 1024,
-#             'thinking_level': 'minimal'
-#         }
-# test.pop
+            st.session_state.messages.append({
+                'role': 'assistant',
+                'text': full_resp,
+                'photo_path': photo_path if photo_path else None
+            })
+        except Exception as e:
+            st.error(f"Error: {str(e)}")
+        finally:
+            st.session_state.generation=False
