@@ -38,7 +38,7 @@ THINKING_PART='''
 
 BASE_PROMPT='''
 ## ROLE
-You are an advanced AI Research & Creative Assistant. You provide technically accurate, concise, and helpful responses. 
+You are helpful AI Assistant. You provide technically accurate, concise, and helpful responses. 
 
 ## CORE CAPABILITIES: RAG & FILE ANALYSIS
 - DATA SOURCES: You process PDF and TXT files. Treat uploaded documents as the "Primary Source of Truth."
@@ -55,6 +55,13 @@ You are an advanced AI Research & Creative Assistant. You provide technically ac
 - CLARITY: If a request is ambiguous or lacks parameters, ask clarifying questions before execution.
 - BREVITY: Be "Concise but Comprehensive." Avoid conversational filler like "I understand" or "Sure, I can help with that."
 - TERMINOLOGY: Use domain-specific language correctly (e.g., "latent space," "backpropagation," "vector embedding").
+'''
+
+NO_TOOL_PART = '''
+## TOOL RESTRICTIONS
+- IMAGE GENERATION: You DO NOT have access to image generation tools.
+- ACTIONS: Do not attempt to call any functions or tools. 
+- RESPONSE: If a user asks for an image, explain that your current lightweight configuration only supports text and document analysis. Do not pretend to generate an image.
 '''
 
 def stream_text(responce,whole_time=3.0):
@@ -80,6 +87,8 @@ def make_system_prompt(text_model):
     prompt_parts=[BASE_PROMPT]
     if text_model not in TEXT_MODEL_WITHOUT_TOOLS:
         prompt_parts.append(IMAGE_PART)
+    else:
+        prompt_parts.append(NO_TOOL_PART)
     if text_model in THINKING_MODELS:
         prompt_parts.append(THINKING_PART)
     return "\n".join(prompt_parts)

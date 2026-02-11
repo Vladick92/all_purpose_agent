@@ -11,10 +11,6 @@ load_dotenv()
 api_key=os.getenv("GEMINI_API_KEY")
 client=genai.Client(api_key=api_key)
 
-search_tool=types.Tool(
-    google_search=types.GoogleSearch()
-)
-
 GEN_IMAGES_DIR = Path("generated_images")
 GEN_IMAGES_DIR.mkdir(exist_ok=True)
 
@@ -47,32 +43,30 @@ def generate_image_tool(prompt:str):
         return {'error': f'Tool error: {str(e)}'}
 
 def get_response(user_input,text_model,document=None):
-    try:
-        active_tools=[generate_image_tool,search_tool] if text_model not in TEXT_MODEL_WITHOUT_TOOLS else None
-        active_think= types.ThinkingConfig(thinking_level=st.session_state.text_model_params['thinking_level']) if text_model in THINKING_MODELS else None
-        params=st.session_state.text_model_params
-        filtered_params={k:v for k,v in params.items() if k!='thinking_level'}
-        main_confing=types.GenerateContentConfig(
-            system_instruction="you are helpful AI assistant. Use tool for generating images",
-            tools=active_tools,
-            thinking_config=active_think,
-            **filtered_params
-        )
+    active_tools=[generate_image_tool] if text_model not in TEXT_MODEL_WITHOUT_TOOLS else None
+    active_think= types.ThinkingConfig(
+        thinking_level=st.session_state.text_model_params['thinking_level']) if text_model in THINKING_MODELS else None
+    params=st.session_state.text_model_params
+    filtered_params={k:v for k,v in params.items() if k!='thinking_level'}
+    main_confing=types.GenerateContentConfig(
+        system_instruction=make_system_prompt(text_model),
+        tools=active_tools,
+        thinking_config=active_think,
+        **filtered_params
+    )
 
-        content_list=[user_input]
-        if document is not None:
-            mime_type= "application/pdf" if document.name.endswith(".pdf") else 'text/plain'
-            doc_data=types.Part.from_bytes(
-                data=document.getvalue(),
-                mime_type=mime_type
-            )
-            content_list.insert(0,doc_data)
-
-        return client.models.generate_content(
-            model=text_model,
-            contents=content_list,
-            config=main_confing
+    content_list=[user_input]
+    if document is not None:
+        mime_type= "application/pdf" if document.name.endswith(".pdf") else 'text/plain'
+        doc_data=types.Part.from_bytes(
+            data=document.getvalue(),
+            mime_type=mime_type
         )
-    except Exception as e:
-        raise Exception(f'API request failed: {str(e)}')
+        content_list.insert(0,doc_data)
+
+    return client.models.generate_content(
+        model=text_model,
+        contents=content_list,
+        config=main_confing
+    )
 
