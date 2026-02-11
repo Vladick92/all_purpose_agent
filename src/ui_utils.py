@@ -115,6 +115,32 @@ def sidebar_render():
                     disabled=st.session_state.generation
                 )
                 
+
+        st.markdown('**State identifiers**')
+        is_lite=st.session_state.text_model not in TEXT_MODEL_WITHOUT_TOOLS
+        is_thinking=st.session_state.text_model in THINKING_MODELS
+        is_params=st.session_state.image_model in IMAGE_MODEL_WITH_PARAMS
+
+        status_cols=st.columns(3)
+        with status_cols[0]:
+            if is_lite:
+                status_cols[0].success('Image tool')
+            else:
+                status_cols[0].error('Image tool')
+
+        with status_cols[1]:
+            if is_thinking:
+                status_cols[1].success('Thinking mode')
+            else:
+                status_cols[1].error('Thinking mode')
+        
+        with status_cols[2]:
+            if is_params and is_lite:
+                status_cols[2].success('Image params')
+            else:
+                status_cols[2].error('Image params')
+
+
         if st.button("clear",disabled=st.session_state.generation):
             st.session_state.messages=[]
             st.rerun()
@@ -128,36 +154,39 @@ def chat_render():
                 st.image(msg['photo_path'],
                         caption=f'Image name: {msg['photo_path'].split('/')[1]}')
 
+
+
 def assistant_responce(user_input,text_model,file):
     with st.chat_message('assistant'):
         placeholder=st.empty()
         full_resp=''
-        # try: 
-        with st.spinner('Thinking',show_time=True):
-            responce=get_response(user_input,text_model,file)
-            if not responce.parts:
-                full_resp="Im sorry, but i cant answer prompt."
-            else:
-                for part in responce.parts:
-                    if part.text:
-                        full_resp+=part.text
+        photo_path=None
+        try: 
+            with st.spinner('Thinking',show_time=True):
+                responce=get_response(user_input,text_model,file)
+                if not responce.parts:
+                    full_resp="Im sorry, but i cant answer prompt."
+                else:
+                    for part in responce.parts:
+                        if part.text:
+                            full_resp+=part.text
 
-                photo_path=get_image_path(responce.automatic_function_calling_history)
+                    photo_path=get_image_path(responce.automatic_function_calling_history)
 
-        current_text=''
-        for word in stream_text(full_resp):
-            current_text+=word
-            placeholder.write(current_text+ "~>")
-        placeholder.write(current_text)
+        except Exception as e:
+            full_resp=f'Something went wrong: {str(e)}{'\n'}'
 
-        st.session_state.messages.append({
-            'role': 'assistant',
-            'text': full_resp,
-            'photo_path': photo_path if photo_path else None
-        })
-        st.session_state.generation=False
+        finally:
+            current_text=''
+            if full_resp:
+                for word in stream_text(full_resp):
+                    current_text+=word
+                    placeholder.write(current_text+ "~>")
+                placeholder.write(current_text)
 
-        # except Exception as e:
-        #     st.error(f"Error: {str(e)}")
-        # finally:
-        #     st.session_state.generation=False
+            st.session_state.messages.append({
+                'role': 'assistant',
+                'text': full_resp,
+                'photo_path': photo_path
+            })
+            st.session_state.generation=False

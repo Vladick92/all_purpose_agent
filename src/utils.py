@@ -15,6 +15,7 @@ AVAILABLE_IMAGE_MODELS={
 }
 
 TEXT_MODEL_WITHOUT_TOOLS={'gemini-2.5-flash-lite'}
+TEXT={'lite'}
 
 THINKING_MODELS={'gemini-3-flash-preview','gemini-3-pro-preview'}
 
