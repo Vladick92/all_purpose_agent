@@ -58,6 +58,8 @@ def sidebar_render():
             disabled=st.session_state.generation
         )
 
+        if selected_file: st.session_state.optional_file=selected_file
+
         with st.expander('Generation parameters'):
             with st.expander('Text generation'):
                 st.session_state.text_model_params['temperature']=st.slider(
@@ -113,9 +115,6 @@ def sidebar_render():
                     disabled=st.session_state.generation
                 )
                 
-
-        if selected_file: st.session_state.optional_file=selected_file
-
         if st.button("clear",disabled=st.session_state.generation):
             st.session_state.messages=[]
             st.rerun()
