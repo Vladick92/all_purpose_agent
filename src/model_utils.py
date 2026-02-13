@@ -7,22 +7,29 @@ from pathlib import Path
 import uuid
 import streamlit as st
 
+# loading env key for API
 load_dotenv()
 api_key=os.getenv("GEMINI_API_KEY")
 client=genai.Client(api_key=api_key)
 
+# directory for saving generated pictures
 GEN_IMAGES_DIR = Path("generated_images")
 GEN_IMAGES_DIR.mkdir(exist_ok=True)
 
+
+# tool for generating images
 def generate_image_tool(prompt:str):
     """This is tool is for generating images. """
     try:
         image_model=st.session_state.image_model
         image_params=st.session_state.image_model_params
+
         base_params={
             'number_of_images': 1,
             'aspect_ratio': '1:1'
         }
+        # not all available image generation models support 
+        # generation with additional parameters
         if image_model in IMAGE_MODEL_WITH_PARAMS:    
             base_params['image_size']=image_params['image_size']
             base_params['aspect_ratio']=image_params['aspect_ratio']
@@ -35,6 +42,8 @@ def generate_image_tool(prompt:str):
             config=image_config
         )
         image_bytes=response.generated_images[0].image.image_bytes
+        
+        # saving image and returing file path for displaying in ui
         file_name=f'img_{uuid.uuid4().hex[:8]}.png'
         photo_path=GEN_IMAGES_DIR/file_name
         photo_path.write_bytes(image_bytes)
@@ -42,8 +51,11 @@ def generate_image_tool(prompt:str):
     except Exception as e:
         raise Exception(f'Mistake in image generation: {str(e)}')
 
+# main function for sending requests
 def get_response(user_input,text_model,document=None):
     try: 
+        # not all models support tools and thinking
+        # so config for request changes dynamically according tu currecnt model
         active_tools=[generate_image_tool] if text_model not in TEXT_MODEL_WITHOUT_TOOLS else None
         active_think= types.ThinkingConfig(
             thinking_level=st.session_state.text_model_params['thinking_level']) if text_model in THINKING_MODELS else None
@@ -56,6 +68,7 @@ def get_response(user_input,text_model,document=None):
             **filtered_params
         )
 
+        # if user provided some additional file adding it to request
         content_list=[user_input]
         if document is not None:
             mime_type= "application/pdf" if document.name.endswith(".pdf") else 'text/plain'
@@ -70,5 +83,6 @@ def get_response(user_input,text_model,document=None):
             contents=content_list,
             config=main_confing
         )
+    
     except Exception as e:
         raise Exception(f"Mistake in model request {str(e)}")

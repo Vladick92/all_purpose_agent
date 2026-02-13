@@ -1,5 +1,6 @@
 import time
 
+# two constansts below for available text and image models
 AVAILABLE_TEXT_MODELS={
     'gemini 2.5 flash lite': 'gemini-2.5-flash-lite',
     'gemini 2.5 flash': 'gemini-2.5-flash',
@@ -14,13 +15,16 @@ AVAILABLE_IMAGE_MODELS={
     'imagen 4 ultra generate': 'imagen-4.0-ultra-generate-001',
 }
 
+# three constants for different models
+# since not all support thunking, tools and additional parameters
 TEXT_MODEL_WITHOUT_TOOLS={'gemini-2.5-flash-lite'}
-TEXT={'lite'}
 
 THINKING_MODELS={'gemini-3-flash-preview','gemini-3-pro-preview'}
 
 IMAGE_MODEL_WITH_PARAMS={'imagen-4.0-generate-001','imagen-4.0-ultra-generate-001'}
 
+# system message is dynamic according to current text model
+# so main parts were defined, if model support feature, prompt part will be added
 IMAGE_PART='''
 ## IMAGE GENERATION PROTOCOL
 - TOOL ACCESS: Use the `generate_image_tool` strictly when requested for visuals, diagrams, UI mockups, or creative assets.
@@ -65,6 +69,25 @@ NO_TOOL_PART = '''
 - RESPONSE: If a user asks for an image, explain that your current lightweight configuration only supports text and document analysis. Do not pretend to generate an image.
 '''
 
+# texts for description in ui
+UI_HELP_TEXTS={
+    'temperature':'Controls randomness. Lower values (e.g., 0.2) make the model deterministic and focused. Higher values (e.g., 1.5) increase "creativity" but also the risk of hallucinations.',
+    'top_p': 'Selects the smallest set of tokens whose cumulative probability exceeds P. It helps balance diversity and coherence by cutting off the "long tail" of low-probability words.',
+    'top_k': 'Limits the model to only consider the K most probable next words. A lower value (e.g., 40) prevents the model from choosing highly unlikely words.',
+    'max_output_tokens': 'Sets the hard limit for the length of the AI`s response. 1 token is roughly 0.75 words. Setting this too low may result in cut-off sentences.',
+    'thinking_level': 'Determines the depth of the model`s internal reasoning process. Higher levels allow for more complex problem-solving but may increase the time it takes to start generating the final answer.',
+    'aspect_ratio': 'Defines the width-to-height ratio of the generated image. 1:1 is a square, while 16:9 is a cinematic widescreen format.',
+    'image_size': 'Controls the resolution of the output. 2K provides more detail and sharpness than 1K but may take longer to generate.',
+    'guidance_scale': 'Controls how closely the model follows your text prompt. A value of 7.0 - 8.0 is usually the "sweet spot." Higher values force the model to be more literal, while lower values give the AI more artistic freedom.',
+    'text_models': 'Models are listed from smallest to smartest, from top to bottom. Not all available models support all features, like image tool and thinking mode. So just switch to another one',
+    'image_models': 'Models are listed from smallest to biggest, from top to bottom. Not all available models support image generation with custom image parameters. So just switch to another one',
+    'generation_help': f'---{'\n'}Down below are additional control menus for generation both text and images',
+    'file_uploader': f'---{'\n'}Models can understand text from files, and help you explain some topic, create roadmap for learning, etc.',
+    'model_switcher': 'This app allow you to switch to other models, there is not some single gemini models.',
+    'state_indicators': f'---{'\n'}Since not all models support all features like thinking, tools and some additional parameters for image generation, indicators were added. {'\n'} **Currenct state of request indicators:**'
+}
+
+# function for streaming text
 def stream_text(responce,whole_time=3.0):
     total_len=len(responce)
     if total_len==0:
@@ -74,6 +97,7 @@ def stream_text(responce,whole_time=3.0):
         yield symbol 
         time.sleep(delay)
 
+# additional function for extracting photo path after tool usage
 def get_image_path(history):
     photo_path=None
     if history:
@@ -84,6 +108,7 @@ def get_image_path(history):
                     photo_path=tool_data.get('result',{}).get('photo_path')
     return photo_path
 
+# dynamic system message function
 def make_system_prompt(text_model):
     prompt_parts=[BASE_PROMPT]
     if text_model not in TEXT_MODEL_WITHOUT_TOOLS:

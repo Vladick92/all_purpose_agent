@@ -1,0 +1,27 @@
+sudo docker ps
+sudo docker images
+
+sudo docker compose watch // If code changes applies it
+sudo docker compose up // If code changes, dont apply it
+
+sudo docker rmi image_name // Remove image
+sudo docker rm container_id // Remove container
+sudo docker rmi -f <image> // Force remove image even if used by stopped containers
+sudo docker image prune // Remove all unused (dangling) images
+sudo docker container prune // Remove all unused (dangling) containers
+
+sudo docker run <image_name> // creates and runs container from image
+sudo docker start <container> // starts existing container
+sudo docker stop <container> // stops running container
+
+sudo docker volume create <name>
+sudo docker volume ls
+sudo docker volume inspect <name> // details of volume
+sudo docker volume prune // remove unsused volumes
+
+sudo docker network list
+sudo docker network create <name>
+sudo docker network connect <network_name> <container_name>
+sudo docker network inspect <network_name>
+
+

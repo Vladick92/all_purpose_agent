@@ -1,0 +1,9 @@
+services:
+  all_purpose_agent:
+    build: .
+    image: all_purpose_agent:latest
+    container_name: all_purpose_agent_cont
+    ports:
+      - 8501:8501
+    environment:
+      - STREAMLIT_SERVER_ENABLECORS=false

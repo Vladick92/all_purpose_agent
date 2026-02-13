@@ -1,0 +1,26 @@
+git branch - list branches
+git branch -m 'name' - rename or create new branch
+git branch -d 'name' - safe branch delete
+git branch -D 'name' - force delete
+after command above
+git push origin --delete 'name'
+
+git switch 'name' - switch to another branch
+git switch -c 'name' - switch to new branch
+
+git status
+git log
+git log --oneline --graph --decorate
+git diff
+git show
+
+git rm --cached filename.txt
+git rm --cached -r folder_name/
+
+--- .gitgnore
+.env - file name
+*.csv - all csv files
+src/main.py - only main in src
+some_folder/ - whole folder
+
+
