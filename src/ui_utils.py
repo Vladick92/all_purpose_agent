@@ -49,9 +49,7 @@ def sidebar_render():
             "Text model",
             options=list(AVAILABLE_TEXT_MODELS.keys()),
             disabled=st.session_state.generation,
-            help=UI_HELP_TEXTS['text_models'],
-            
-        )
+            help=UI_HELP_TEXTS['text_models'],)
         st.session_state.text_model=AVAILABLE_TEXT_MODELS[text_model]
 
         # image model picker
@@ -59,8 +57,7 @@ def sidebar_render():
             "Image model",
             options=list(AVAILABLE_IMAGE_MODELS.keys()),
             disabled=st.session_state.generation,
-            help=UI_HELP_TEXTS['image_models']
-        )
+            help=UI_HELP_TEXTS['image_models'])
         st.session_state.image_model=AVAILABLE_IMAGE_MODELS[image_model]
 
         # additional indicators for current state
@@ -93,8 +90,7 @@ def sidebar_render():
             "Choose files for model",
             type=['txt','pdf'],
             max_upload_size=20,
-            disabled=st.session_state.generation
-        )
+            disabled=st.session_state.generation)
 
         if selected_file: st.session_state.optional_file=selected_file
 

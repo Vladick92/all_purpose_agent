@@ -1,13 +1,15 @@
 from model_utils import *
 from utils import *
 from ui_utils import *
+import streamlit as st
 
 def main():
     # functions from ui_utils.py
+    st.title('Im here to help you !')
     session_state_init()
     sidebar_render()
     chat_render()
-
+    
     # getting input from user
     if message:=st.chat_input("Enter: ",disabled=st.session_state.generation):
         st.session_state.messages.append({
